@@ -101,13 +101,13 @@ if __name__ == '__main__':
     test_data = test_file.read()
     test_file.close()
 
-    #print(f'part 1 - test 1 output : {part1(test_data)}')
+    print(f'part 1 - test 1 output : {part1(test_data)}')
 
     input_file = open('input1.txt','r')
     input_data = input_file.read()
     input_file.close()
 
-    #print(f'part 1 - output : {part1(input_data)}')
+    print(f'part 1 - output : {part1(input_data)}')
 
     test_file = open('test1.txt','r')
     test_data = test_file.read()
@@ -120,3 +120,7 @@ if __name__ == '__main__':
     input_file.close()
 
     print(f'part 2 - output : {part2(input_data)}')
+
+    test_file = open('test1.txt','r')
+    test_data = test_file.read()
+    test_file.close()

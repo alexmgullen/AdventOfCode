@@ -1,4 +1,3 @@
-import copy
 """
 Advent of Code Day6
 """

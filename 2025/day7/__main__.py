@@ -136,6 +136,98 @@ def part1(diagram: str) -> int:
 
     return total
 
+def part2(diagram: str) -> int:
+    """
+    """
+    total = 0
+
+    start = (-1,-1)
+    splitters = []
+
+    height = 0
+    width = 0
+
+    display = []
+
+    ######################################################
+    # This part will mostly use the same logic as part 1 #
+    # skip to the next for loop for different logic      #
+    ######################################################
+
+    # we also use this double for loop to build the display
+    for y, row in enumerate(diagram.strip().split('\n')):
+
+        display_row = []
+        for x, col in enumerate(row):
+            if col == 'S':
+                start = (x,y)
+            elif col == '^':
+                splitters.append((x,y))
+            width = x # save the width for later, (the loop will always end with x at the width of the input)
+
+            display_row.append(col) # visualization logic
+
+        height = y # save the height for later, (the loop will always end with y at the height of the input)
+
+        display.append(display_row) # display logic
+
+    ######################
+    # Logic changes here #
+    ######################
+    
+    # we can calculate the total number of paths that go down each route by assigning 
+    # like the following diagram, the goal of this code will be to replicate this diagram
+    # logic by looping though each row, detecting if the current value, or the value
+    # above the current value is important, then if it is multiplying it with all the vaulues
+    # around it to create an array that looks very much like the diagram below
+
+    # 0  - .  .  .  .  .  .  .  S  .  .  .  .  .  .  .
+    # 1  - .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+    # 2  - .  .  .  .  .  .  1  ^  1  .  .  .  .  .  .
+    # 3  - .  .  .  .  .  .  1  .  1  .  .  .  .  .  .
+    # 4  - .  .  .  .  .  1  ^  2  ^  1  .  .  .  .  .
+    # 5  - .  .  .  .  .  1  .  2  .  1  .  .  .  .  .
+    # 6  - .  .  .  .  1  ^  3  ^  3  ^  1  .  .  .  .
+    # 7  - .  .  .  .  1  .  3  .  3  .  1  .  .  .  .
+    # 8  - .  .  .  1  ^  4  ^  3  3  1  ^  1  .  .  .
+    # 9  - .  .  .  1  .  4  .  3  3  1  .  1  .  .  .
+    # 10 - .  .  1  ^  5  ^  4  3  4  ^  2  ^  1  .  .
+    # 11 - .  .  1  .  5  .  4  3  4  .  2  .  1  .  .
+    # 12 - .  1  ^  1  5  4  ^  7  4  .  2  1  ^  1  .
+    # 13 - .  1  .  1  5  4  .  7  4  .  2  1  .  1  .
+    # 14 - 1  ^  2  ^  10 ^  11 ^  11 ^  2  1  1  ^  1
+    # 15 - 1  .  2  .  10 .  11 .  11 .  2  1  1  .  1
+    #
+    #      |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+    #      0  1  2  3  4  5  6  7  8  9  10 11 12 13 14
+
+
+    # this is the core logic that iterates over each row checks if the values is a splitter 
+    # or has been split, then does the multiplication that results int the triangle above.
+    for y in range(height+1):
+        for x in range(width+1):
+            parent = display[y-1][x] # due to the way python indexes arrays 
+            # this wraps around to the 15th row for the 1st row but the constraints 
+            # of this problem mean that row 15 won't contain anything anyway.
+
+            if parent == 'S':
+                display[y][x] = 1
+            if display[y][x] == '^':
+                if not isinstance(parent,str):
+                    display[y][x-1] = parent + (0 if isinstance(display[y][x-1],str) else display[y][x-1])
+                    display[y][x+1] = parent + (0 if isinstance(display[y][x+1],str) else display[y][x+1])
+            elif not isinstance(display[y-1][x],str):
+                if isinstance(display[y][x],str):
+                    display[y][x] = 0
+                display[y][x] += display[y-1][x]
+
+    # finally we can sum all the numbers in the last array to get the total number of
+    # possible permutations for a path.
+    for x in range(width+1):
+        if not isinstance(display[height][x],str):
+            total += display[height][x]
+
+    return total
 
 if __name__ == '__main__':
     test_file = open('test1.txt','r')
@@ -149,3 +241,15 @@ if __name__ == '__main__':
     input_file.close()
 
     print(f'part 1 - output : {part1(input_data)}')
+
+    test_file = open('test1.txt','r')
+    test_data = test_file.read()
+    test_file.close()
+
+    print(f'part 2 - test 1 output : {part2(test_data)}')
+
+    input_file = open('input1.txt','r')
+    input_data = input_file.read()
+    input_file.close()
+
+    print(f'part 2 - output : {part2(input_data)}')
